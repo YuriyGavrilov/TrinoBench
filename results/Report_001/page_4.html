@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Производительность загрузки данных (операции COPY)</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 812px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 812px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #4CAF50;
+        }
+        .bar-label {
+            font-size: 14px;
+            font-weight: 500;
+            fill: white;
+        }
+        .axis text {
+            fill: #ccc;
+            font-size: 12px;
+        }
+        .axis path, .axis line {
+            stroke: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Производительность загрузки данных (операции COPY)</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-row space-x-8">
+<!-- Left Column: Charts and Visualization -->
+<div class="w-2/3">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-clock text-yellow-300 mr-3"></i>
+                    Время загрузки данных
+                </h2>
+<!-- Loading Time Chart -->
+<div class="h-64 mb-6" id="loadingTimeChart"></div>
+<!-- Compression Efficiency -->
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-compress-alt text-blue-300 mr-3"></i>
+                    Эффективность сжатия и размер данных
+                </h2>
+<div class="h-48" id="compressionChart" data-sk-source-container="chart" data-sk-source-id="56HXY0" data-sk-source-type="web_search"></div>
+</div>
+<!-- Right Column: Key Insights -->
+<div class="w-1/3">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-lightbulb text-yellow-300 mr-3"></i>
+                    Ключевые выводы
+                </h2>
+<div class="space-y-4">
+<div class="highlight-box p-4 rounded-r-lg">
+<h3 class="text-xl font-medium mb-2 text-green-400">Лидер по скорости загрузки</h3>
+<p class="text-lg">ZSTD показал наилучшее время загрузки <strong>231.5</strong> секунд, что на <strong>7.3%</strong> быстрее несжатых данных.</p>
+</div>
+<div class="highlight-box p-4 rounded-r-lg mt-4">
+<h3 class="text-xl font-medium mb-2 text-green-400">Лучшая степень сжатия</h3>
+<p class="text-lg">ZSTD также обеспечил наилучшую компрессию (<strong>1.52x</strong>), уменьшив размер данных до <strong>255.9 МБ</strong>.</p>
+</div>
+<div class="highlight-box p-4 rounded-r-lg mt-4">
+<h3 class="text-xl font-medium mb-2 text-blue-300">Почему сжатие ускоряет загрузку?</h3>
+<p>Узким местом в тестовой конфигурации является пропускная способность сети. Уменьшение объема передаваемых данных дает больший выигрыш, чем затраты процессорного времени на компрессию.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-info-circle mr-1"></i> Результаты усреднены по трем тестовым прогонам
+            </div>
+<div>4 / 9</div>
+</div>
+</div>
+<script>
+        // Data for loading time chart from document
+        const loadingTimeData = [
+            { algorithm: "ZSTD", time: 231.5, color: "#4CAF50" },
+            { algorithm: "LZ4", time: 234.3, color: "#2196F3" },
+            { algorithm: "GZIP", time: 239.9, color: "#F44336" },
+            { algorithm: "Snappy", time: 241.2, color: "#FFC107" },
+            { algorithm: "None", time: 249.8, color: "#9E9E9E" }
+        ];
+
+        // Data for compression chart
+        const compressionData = [
+            { algorithm: "ZSTD", size: 255.9, ratio: 1.52, color: "#4CAF50" },
+            { algorithm: "GZIP", size: 260.7, ratio: 1.49, color: "#F44336" },
+            { algorithm: "LZ4", size: 285.3, ratio: 1.36, color: "#2196F3" },
+            { algorithm: "Snappy", size: 338.4, ratio: 1.15, color: "#FFC107" },
+            { algorithm: "None", size: 388.3, ratio: 1.00, color: "#9E9E9E" }
+        ];
+
+        // Loading Time Chart
+        function createLoadingTimeChart() {
+            const margin = { top: 20, right: 30, bottom: 40, left: 60 };
+            const width = document.getElementById('loadingTimeChart').clientWidth - margin.left - margin.right;
+            const height = document.getElementById('loadingTimeChart').clientHeight - margin.top - margin.bottom;
+
+            const svg = d3.select("#loadingTimeChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Sort data by time (ascending)
+            const sortedData = [...loadingTimeData].sort((a, b) => a.time - b.time);
+
+            // X and Y scales
+            const x = d3.scaleBand()
+                .domain(sortedData.map(d => d.algorithm))
+                .range([0, width])
+                .padding(0.3);
+
+            const y = d3.scaleLinear()
+                .domain([220, d3.max(sortedData, d => d.time) * 1.05])
+                .range([height, 0]);
+
+            // Draw bars
+            svg.selectAll(".bar")
+                .data(sortedData)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.algorithm))
+                .attr("width", x.bandwidth())
+                .attr("y", d => y(d.time))
+                .attr("height", d => height - y(d.time))
+                .attr("fill", d => d.color)
+                .attr("rx", 4)
+                .attr("ry", 4);
+
+            // Add labels on top of bars
+            svg.selectAll(".bar-label")
+                .data(sortedData)
+                .enter()
+                .append("text")
+                .attr("class", "bar-label")
+                .attr("x", d => x(d.algorithm) + x.bandwidth() / 2)
+                .attr("y", d => y(d.time) - 8)
+                .attr("text-anchor", "middle")
+                .text(d => d.time + "s");
+
+            // Add X axis
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            svg.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "s"));
+
+            // Add Y axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margin.left + 20)
+                .attr("x", -height / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ccc")
+                .text("Время загрузки (секунды)");
+        }
+
+        // Compression Chart
+        function createCompressionChart() {
+            const margin = { top: 20, right: 30, bottom: 60, left: 60 };
+            const width = document.getElementById('compressionChart').clientWidth - margin.left - margin.right;
+            const height = document.getElementById('compressionChart').clientHeight - margin.top - margin.bottom;
+
+            const svg = d3.select("#compressionChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Sort data by file size (ascending)
+            const sortedData = [...compressionData].sort((a, b) => a.size - b.size);
+
+            // X and Y scales
+            const x = d3.scaleBand()
+                .domain(sortedData.map(d => d.algorithm))
+                .range([0, width])
+                .padding(0.3);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(sortedData, d => d.size) * 1.1])
+                .range([height, 0]);
+
+            // Draw bars
+            svg.selectAll(".bar")
+                .data(sortedData)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.algorithm))
+                .attr("width", x.bandwidth())
+                .attr("y", d => y(d.size))
+                .attr("height", d => height - y(d.size))
+                .attr("fill", d => d.color)
+                .attr("rx", 4)
+                .attr("ry", 4);
+
+            // Add labels on top of bars with file size
+            svg.selectAll(".size-label")
+                .data(sortedData)
+                .enter()
+                .append("text")
+                .attr("class", "bar-label")
+                .attr("x", d => x(d.algorithm) + x.bandwidth() / 2)
+                .attr("y", d => y(d.size) - 8)
+                .attr("text-anchor", "middle")
+                .text(d => d.size + " МБ");
+
+            // Add compression ratio labels below X axis
+            svg.selectAll(".ratio-label")
+                .data(sortedData)
+                .enter()
+                .append("text")
+                .attr("class", "bar-label")
+                .attr("x", d => x(d.algorithm) + x.bandwidth() / 2)
+                .attr("y", height + 30)
+                .attr("text-anchor", "middle")
+                .text(d => d.ratio + "x");
+
+            // Add X axis
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            svg.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + " МБ"));
+
+            // Add compression ratio label
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 50)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ccc")
+                .text("Степень сжатия (относительно несжатых данных)");
+        }
+
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createLoadingTimeChart();
+            createCompressionChart();
+        });
+    </script>
+
+</body></html>

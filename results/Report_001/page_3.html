@@ -1,0 +1,274 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Обзор производительности алгоритмов сжатия</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 890px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 890px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .algorithm-card {
+            transition: all 0.3s ease;
+        }
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .bar-chart-container {
+            height: 250px;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="text-4xl font-bold mb-2">Обзор производительности алгоритмов сжатия</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-col space-y-6 flex-grow">
+<!-- Summary Table -->
+<div class="overflow-hidden">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-table text-yellow-300 mr-3"></i>
+                    Сводные показатели алгоритмов сжатия
+                </h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left" data-sk-source-container="chart" data-sk-source-id="56HXY0" data-sk-source-type="web_search">
+<thead>
+<tr class="bg-blue-900 bg-opacity-50">
+<th class="py-3 px-4 border-b border-blue-700">Алгоритм</th>
+<th class="py-3 px-4 border-b border-blue-700">Размер данных (МБ)</th>
+<th class="py-3 px-4 border-b border-blue-700">Степень сжатия</th>
+<th class="py-3 px-4 border-b border-blue-700">Время загрузки (сек)</th>
+<th class="py-3 px-4 border-b border-blue-700">Время запросов (сек)</th>
+<th class="py-3 px-4 border-b border-blue-700">Общее время (сек)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="algorithm-card bg-green-500 bg-opacity-20 hover:bg-opacity-30">
+<td class="py-2 px-4 border-b border-blue-800 font-medium text-green-400">ZSTD</td>
+<td class="py-2 px-4 border-b border-blue-800 font-bold">255.9</td>
+<td class="py-2 px-4 border-b border-blue-800 font-bold">1.52x</td>
+<td class="py-2 px-4 border-b border-blue-800">231.5</td>
+<td class="py-2 px-4 border-b border-blue-800">116.4</td>
+<td class="py-2 px-4 border-b border-blue-800 font-bold">347.9</td>
+</tr>
+<tr class="algorithm-card bg-blue-500 bg-opacity-20 hover:bg-opacity-30">
+<td class="py-2 px-4 border-b border-blue-800 font-medium text-blue-400">LZ4</td>
+<td class="py-2 px-4 border-b border-blue-800">285.3</td>
+<td class="py-2 px-4 border-b border-blue-800">1.36x</td>
+<td class="py-2 px-4 border-b border-blue-800">234.3</td>
+<td class="py-2 px-4 border-b border-blue-800 font-bold">115.5</td>
+<td class="py-2 px-4 border-b border-blue-800">349.8</td>
+</tr>
+<tr class="algorithm-card bg-red-500 bg-opacity-20 hover:bg-opacity-30">
+<td class="py-2 px-4 border-b border-blue-800 font-medium text-red-400">GZIP</td>
+<td class="py-2 px-4 border-b border-blue-800">260.7</td>
+<td class="py-2 px-4 border-b border-blue-800">1.49x</td>
+<td class="py-2 px-4 border-b border-blue-800">239.9</td>
+<td class="py-2 px-4 border-b border-blue-800">128.0</td>
+<td class="py-2 px-4 border-b border-blue-800">367.9</td>
+</tr>
+<tr class="algorithm-card bg-yellow-500 bg-opacity-20 hover:bg-opacity-30">
+<td class="py-2 px-4 border-b border-blue-800 font-medium text-yellow-400">Snappy</td>
+<td class="py-2 px-4 border-b border-blue-800">338.4</td>
+<td class="py-2 px-4 border-b border-blue-800">1.15x</td>
+<td class="py-2 px-4 border-b border-blue-800">241.2</td>
+<td class="py-2 px-4 border-b border-blue-800">117.1</td>
+<td class="py-2 px-4 border-b border-blue-800">358.3</td>
+</tr>
+<tr class="algorithm-card bg-gray-500 bg-opacity-20 hover:bg-opacity-30">
+<td class="py-2 px-4 border-b border-blue-800 font-medium text-gray-400">None</td>
+<td class="py-2 px-4 border-b border-blue-800">388.3</td>
+<td class="py-2 px-4 border-b border-blue-800">1.00x</td>
+<td class="py-2 px-4 border-b border-blue-800">249.8</td>
+<td class="py-2 px-4 border-b border-blue-800">121.7</td>
+<td class="py-2 px-4 border-b border-blue-800">371.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Visualization Section -->
+<div class="flex space-x-6">
+<!-- Compression Ratio Chart -->
+<div class="w-1/2 bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-compress-alt mr-2"></i> Степень сжатия (относительно None)
+                    </h3>
+<div class="bar-chart-container" id="compressionRatioChart" data-sk-source-container="chart" data-sk-source-id="56HXY0" data-sk-source-type="web_search"></div>
+</div>
+<!-- Performance Characteristics -->
+<div class="w-1/2 bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-balance-scale mr-2"></i> Сравнительные характеристики
+                    </h3>
+<div class="space-y-4 mt-4">
+<div>
+<p class="mb-1 font-medium">Наилучшая степень сжатия:</p>
+<div class="flex items-center">
+<div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+<span class="text-green-400 font-bold">ZSTD (1.52x)</span>
+<span class="ml-2 text-sm">— экономия 132.4 МБ (34.1%)</span>
+</div>
+</div>
+<div>
+<p class="mb-1 font-medium">Наибыстрейшая загрузка данных:</p>
+<div class="flex items-center">
+<div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+<span class="text-green-400 font-bold">ZSTD (231.5 сек)</span>
+<span class="ml-2 text-sm">— быстрее на 18.3 сек (7.3%)</span>
+</div>
+</div>
+<div>
+<p class="mb-1 font-medium">Наибыстрейшее выполнение запросов:</p>
+<div class="flex items-center">
+<div class="w-4 h-4 bg-blue-400 rounded-full mr-2"></div>
+<span class="text-blue-400 font-bold">LZ4 (115.5 сек)</span>
+<span class="ml-2 text-sm">— быстрее на 6.2 сек (5.1%)</span>
+</div>
+</div>
+<div>
+<p class="mb-1 font-medium">Наилучшее общее время:</p>
+<div class="flex items-center">
+<div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+<span class="text-green-400 font-bold">ZSTD (347.9 сек)</span>
+<span class="ml-2 text-sm">— быстрее на 23.6 сек (6.4%)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 pt-2 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-chart-line mr-1"></i> На основе усредненных данных трех тестовых прогонов
+            </div>
+<div>3 / 9</div>
+</div>
+</div>
+<script>
+        // Data for compression ratio chart
+        const compressionData = [
+            { algorithm: "ZSTD", ratio: 1.52, color: "#10B981" },  // green-500
+            { algorithm: "GZIP", ratio: 1.49, color: "#EF4444" },  // red-500
+            { algorithm: "LZ4", ratio: 1.36, color: "#60A5FA" },   // blue-400
+            { algorithm: "Snappy", ratio: 1.15, color: "#F59E0B" }, // yellow-500
+            { algorithm: "None", ratio: 1.00, color: "#9CA3AF" }   // gray-400
+        ];
+        
+        // Create the chart
+        function createCompressionRatioChart() {
+            const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+            const width = document.getElementById('compressionRatioChart').clientWidth - margin.left - margin.right;
+            const height = document.getElementById('compressionRatioChart').clientHeight - margin.top - margin.bottom;
+            
+            // Create SVG
+            const svg = d3.select("#compressionRatioChart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+                
+            // Create tooltip
+            const tooltip = d3.select("body")
+                .append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+                
+            // X scale
+            const x = d3.scaleBand()
+                .domain(compressionData.map(d => d.algorithm))
+                .range([0, width])
+                .padding(0.3);
+                
+            // Y scale
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(compressionData, d => d.ratio) * 1.1])
+                .range([height, 0]);
+                
+            // Add X axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("fill", "white")
+                .style("font-size", "12px");
+                
+            // Add Y axis
+            svg.append("g")
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "x"))
+                .selectAll("text")
+                .attr("fill", "white")
+                .style("font-size", "12px");
+                
+            // Add bars
+            svg.selectAll(".bar")
+                .data(compressionData)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.algorithm))
+                .attr("y", d => y(d.ratio))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.ratio))
+                .attr("fill", d => d.color)
+                .attr("rx", 4)
+                .on("mouseover", function(event, d) {
+                    d3.select(this).attr("opacity", 0.8);
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html(`${d.algorithm}: ${d.ratio}x сжатие`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.select(this).attr("opacity", 1);
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+                
+            // Add labels on top of bars
+            svg.selectAll(".label")
+                .data(compressionData)
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .attr("x", d => x(d.algorithm) + x.bandwidth() / 2)
+                .attr("y", d => y(d.ratio) - 5)
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .text(d => d.ratio + "x");
+        }
+        
+        // Initialize the chart when the page loads
+        window.addEventListener("load", createCompressionRatioChart);
+    </script>
+
+</body></html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Анализ производительности запросов</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 864px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 864px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .insight-box {
+            transition: all 0.3s ease;
+        }
+        .insight-box:hover {
+            transform: translateY(-5px);
+        }
+        .bar {
+            transition: all 0.3s ease;
+        }
+        .bar:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Анализ производительности запросов</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-row space-x-8">
+<!-- Left Column: Chart and Data -->
+<div class="w-3/5">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-search text-yellow-300 mr-3"></i>
+                    Время выполнения запросов
+                </h2>
+<!-- Query Execution Time Chart -->
+<div class="h-72 mt-4" id="queryChart" data-sk-source-id="P1DR7K" data-sk-source-type="web_search" data-sk-source-container="chart"></div>
+<!-- Additional Performance Metrics -->
+<div class="mt-6">
+<h3 class="text-xl font-medium mb-3 text-blue-300">
+<i class="fas fa-stopwatch mr-2"></i> Среднее время на запрос
+                    </h3>
+<div class="flex justify-between mt-4">
+<div class="text-center">
+<div class="text-3xl font-bold text-blue-400">5.25 с</div>
+<div class="mt-1 text-sm">LZ4</div>
+<div class="text-xs text-gray-300">(самый быстрый)</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-bold text-green-500">5.29 с</div>
+<div class="mt-1 text-sm">ZSTD</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-bold text-yellow-500">5.32 с</div>
+<div class="mt-1 text-sm">Snappy</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-bold text-gray-400">5.53 с</div>
+<div class="mt-1 text-sm">None</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-bold text-red-500">5.82 с</div>
+<div class="mt-1 text-sm">GZIP</div>
+<div class="text-xs text-gray-300">(самый медленный)</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Key Insights -->
+<div class="w-2/5">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-lightbulb text-yellow-300 mr-3"></i>
+                    Ключевые выводы
+                </h2>
+<div class="space-y-4">
+<div class="insight-box bg-opacity-20 bg-blue-900 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-rocket mr-2"></i> LZ4 — лидер по скорости чтения
+                        </h3>
+<p class="text-sm">
+                            LZ4 выполнил все 22 запроса за 115.5 секунд, что делает его самым быстрым алгоритмом для аналитических операций. Этот алгоритм оптимизирован для максимальной скорости распаковки.
+                        </p>
+</div>
+<div class="insight-box bg-opacity-20 bg-blue-900 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-balance-scale mr-2"></i> Эффективный баланс ZSTD
+                        </h3>
+<p class="text-sm">
+                            ZSTD отстает от LZ4 всего на 0.9 секунды (116.4 с), но при этом обеспечивает гораздо лучшую степень сжатия. Это делает его привлекательным для смешанных нагрузок.
+                        </p>
+</div>
+<div class="insight-box bg-opacity-20 bg-blue-900 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-exclamation-triangle mr-2"></i> Недостатки GZIP
+                        </h3>
+<p class="text-sm">
+                            GZIP показал самое медленное время выполнения запросов (128.0 с) несмотря на хорошую степень сжатия. Это связано с высокими требованиями к CPU для декомпрессии данных.
+                        </p>
+</div>
+<div class="insight-box bg-opacity-20 bg-blue-900 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-info-circle mr-2"></i> Особенности без сжатия
+                        </h3>
+<p class="text-sm">
+                            Вариант без сжатия (None) показал среднюю производительность (121.7 с), уступая быстрым алгоритмам, так как ему приходится читать с диска больший объем данных.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-info-circle mr-1"></i> Выполнено 22 аналитических запроса для каждого алгоритма сжатия
+            </div>
+<div>5 / 9</div>
+</div>
+</div>
+<script>
+        // Data for query performance
+        const queryData = [
+            { algorithm: "LZ4", time: 115.5, color: "#60A5FA" },    // blue-400
+            { algorithm: "ZSTD", time: 116.4, color: "#10B981" },   // green-500
+            { algorithm: "Snappy", time: 117.1, color: "#F59E0B" }, // yellow-500
+            { algorithm: "None", time: 121.7, color: "#9CA3AF" },   // gray-400
+            { algorithm: "GZIP", time: 128.0, color: "#EF4444" }    // red-500
+        ];
+
+        // Sort data from fastest to slowest
+        queryData.sort((a, b) => a.time - b.time);
+
+        // Set up the chart dimensions
+        const margin = { top: 20, right: 30, bottom: 40, left: 160 };
+        const width = 700 - margin.left - margin.right;
+        const height = 250 - margin.top - margin.bottom;
+
+        // Create SVG container
+        const svg = d3.select("#queryChart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Create scales
+        const x = d3.scaleLinear()
+            .domain([0, d3.max(queryData, d => d.time) * 1.1])
+            .range([0, width]);
+
+        const y = d3.scaleBand()
+            .domain(queryData.map(d => d.algorithm))
+            .range([0, height])
+            .padding(0.3);
+
+        // Add X axis
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).ticks(5))
+            .attr("color", "white")
+            .append("text")
+            .attr("fill", "white")
+            .attr("x", width / 2)
+            .attr("y", 35)
+            .attr("text-anchor", "middle")
+            .text("Время выполнения (секунды)");
+
+        // Add Y axis
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .attr("color", "white");
+
+        // Add bars
+        svg.selectAll(".bar")
+            .data(queryData)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("y", d => y(d.algorithm))
+            .attr("height", y.bandwidth())
+            .attr("x", 0)
+            .attr("width", 0)
+            .attr("fill", d => d.color)
+            .transition()
+            .duration(800)
+            .attr("width", d => x(d.time));
+
+        // Add labels to bars
+        svg.selectAll(".label")
+            .data(queryData)
+            .enter()
+            .append("text")
+            .attr("class", "label")
+            .attr("y", d => y(d.algorithm) + y.bandwidth() / 2)
+            .attr("x", d => x(d.time) + 5)
+            .attr("dy", "0.35em")
+            .attr("fill", "white")
+            .text(d => `${d.time} сек`);
+    </script>
+
+</body></html>

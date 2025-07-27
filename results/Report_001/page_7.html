@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Performance Trade-offs</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 1072px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 1072px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .algorithm-card {
+            transition: all 0.3s ease;
+        }
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .rating-bar {
+            height: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Компромиссы производительности</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex space-x-6">
+<!-- Left Column: Trade-off Triangle -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-6 flex items-center">
+<i class="fas fa-balance-scale text-yellow-300 mr-3"></i>
+                    Баланс производительности
+                </h2>
+<!-- Triangle Trade-off Visualization -->
+<div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg h-96" id="tradeoff-triangle" data-sk-source-container="chart" data-sk-source-id="56HXY0" data-sk-source-type="web_search">
+<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // SVG setup
+                            const width = 500;
+                            const height = 350;
+                            const margin = { top: 30, right: 30, bottom: 30, left: 30 };
+                            
+                            const svg = d3.select("#tradeoff-triangle")
+                                .append("svg")
+                                .attr("width", width)
+                                .attr("height", height)
+                                .append("g")
+                                .attr("transform", `translate(${margin.left},${margin.top})`);
+                            
+                            // Define triangle corners
+                            const triangleWidth = width - margin.left - margin.right;
+                            const triangleHeight = height - margin.top - margin.bottom;
+                            
+                            const corners = [
+                                { name: "Степень сжатия", x: triangleWidth / 2, y: 0 },
+                                { name: "Скорость записи", x: 0, y: triangleHeight },
+                                { name: "Скорость чтения", x: triangleWidth, y: triangleHeight }
+                            ];
+                            
+                            // Draw triangle
+                            svg.append("polygon")
+                                .attr("points", corners.map(d => `${d.x},${d.y}`).join(" "))
+                                .attr("fill", "none")
+                                .attr("stroke", "white")
+                                .attr("stroke-width", 1)
+                                .attr("stroke-opacity", 0.7);
+                            
+                            // Add corner labels
+                            svg.selectAll(".corner-label")
+                                .data(corners)
+                                .enter()
+                                .append("text")
+                                .attr("class", "corner-label")
+                                .attr("x", d => {
+                                    if (d.name === "Степень сжатия") return d.x;
+                                    if (d.name === "Скорость записи") return d.x - 20;
+                                    return d.x + 20;
+                                })
+                                .attr("y", d => {
+                                    if (d.name === "Степень сжатия") return d.y - 10;
+                                    return d.y + 20;
+                                })
+                                .attr("text-anchor", d => {
+                                    if (d.name === "Степень сжатия") return "middle";
+                                    if (d.name === "Скорость записи") return "end";
+                                    return "start";
+                                })
+                                .attr("fill", "white")
+                                .text(d => d.name);
+                            
+                            // Algorithm positions (based on their relative strengths)
+                            // Normalized values from 0-1 for each dimension
+                            const algorithms = [
+                                { name: "ZSTD", color: "#48BB78", compression: 0.95, write: 0.9, read: 0.85 },
+                                { name: "LZ4", color: "#4299E1", compression: 0.7, write: 0.85, read: 0.9 },
+                                { name: "GZIP", color: "#F56565", compression: 0.9, write: 0.6, read: 0.5 },
+                                { name: "Snappy", color: "#ECC94B", compression: 0.4, write: 0.7, read: 0.8 },
+                                { name: "None", color: "#A0AEC0", compression: 0.1, write: 0.5, read: 0.7 }
+                            ];
+                            
+                            // Convert barycentric coordinates to Cartesian
+                            function barycentric(a, b, c, point) {
+                                return {
+                                    x: point.compression * a.x + point.write * b.x + point.read * c.x,
+                                    y: point.compression * a.y + point.write * b.y + point.read * c.y
+                                };
+                            }
+                            
+                            // Plot algorithms
+                            algorithms.forEach(algo => {
+                                // Normalize weights to sum to 1
+                                const total = algo.compression + algo.write + algo.read;
+                                const normalized = {
+                                    compression: algo.compression / total,
+                                    write: algo.write / total,
+                                    read: algo.read / total
+                                };
+                                
+                                const pos = barycentric(corners[0], corners[1], corners[2], normalized);
+                                
+                                // Add point
+                                svg.append("circle")
+                                    .attr("cx", pos.x)
+                                    .attr("cy", pos.y)
+                                    .attr("r", 8)
+                                    .attr("fill", algo.color)
+                                    .attr("stroke", "white")
+                                    .attr("stroke-width", 1);
+                                
+                                // Add label
+                                svg.append("text")
+                                    .attr("x", pos.x)
+                                    .attr("y", pos.y - 12)
+                                    .attr("text-anchor", "middle")
+                                    .attr("fill", "white")
+                                    .attr("font-weight", "bold")
+                                    .attr("font-size", "12px")
+                                    .text(algo.name);
+                            });
+                        });
+                    </script>
+</div>
+<div class="mt-4 text-sm text-gray-300">
+<p>Положение алгоритма на диаграмме отражает его относительную эффективность по трем ключевым параметрам.</p>
+<p>Чем ближе к вершине треугольника, тем лучше алгоритм по соответствующему параметру.</p>
+</div>
+</div>
+<!-- Right Column: Algorithm Comparisons -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-6 flex items-center">
+<i class="fas fa-bullseye text-blue-300 mr-3"></i>
+                    Оптимальные сценарии использования
+                </h2>
+<!-- Algorithm Cards -->
+<div class="space-y-4">
+<!-- ZSTD -->
+<div class="algorithm-card bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<div class="flex justify-between items-center">
+<h3 class="text-xl font-semibold text-green-400">ZSTD</h3>
+<div class="bg-green-500 px-3 py-1 rounded-full text-xs font-bold">Лучший выбор</div>
+</div>
+<div class="mt-2 space-y-2">
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Степень сжатия (1.52x)</span>
+<span>Отлично</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-green-400" style="width: 95%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость загрузки (231.5с)</span>
+<span>Отлично</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-green-400" style="width: 95%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость запросов (116.4с)</span>
+<span>Очень хорошо</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-green-400" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<div class="mt-2 text-sm">
+<i class="fas fa-check-circle text-green-400 mr-1"></i>
+<span class="font-medium">Оптимально для:</span> Смешанных нагрузок (частая запись и чтение)
+                        </div>
+</div>
+<!-- LZ4 -->
+<div class="algorithm-card bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<div class="flex justify-between items-center">
+<h3 class="text-xl font-semibold text-blue-400">LZ4</h3>
+<div class="bg-blue-500 px-3 py-1 rounded-full text-xs font-bold">Лидер по чтению</div>
+</div>
+<div class="mt-2 space-y-2">
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Степень сжатия (1.36x)</span>
+<span>Хорошо</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-blue-400" style="width: 70%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость загрузки (234.3с)</span>
+<span>Очень хорошо</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-blue-400" style="width: 85%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость запросов (115.5с)</span>
+<span>Отлично</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-blue-400" style="width: 95%"></div>
+</div>
+</div>
+</div>
+<div class="mt-2 text-sm">
+<i class="fas fa-check-circle text-blue-400 mr-1"></i>
+<span class="font-medium">Оптимально для:</span> Нагрузок с интенсивным чтением данных
+                        </div>
+</div>
+<!-- GZIP -->
+<div class="algorithm-card bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<div class="flex justify-between items-center">
+<h3 class="text-xl font-semibold text-red-400">GZIP</h3>
+<div class="bg-red-500 px-3 py-1 rounded-full text-xs font-bold">Для архивации</div>
+</div>
+<div class="mt-2 space-y-2">
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Степень сжатия (1.49x)</span>
+<span>Очень хорошо</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-red-400" style="width: 90%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость загрузки (239.9с)</span>
+<span>Средне</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-red-400" style="width: 60%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-1">
+<span>Скорость запросов (128.0с)</span>
+<span>Низкая</span>
+</div>
+<div class="w-full bg-gray-700 rounded-full">
+<div class="rating-bar bg-red-400" style="width: 50%"></div>
+</div>
+</div>
+</div>
+<div class="mt-2 text-sm">
+<i class="fas fa-check-circle text-red-400 mr-1"></i>
+<span class="font-medium">Оптимально для:</span> Архивации и холодных данных
+                        </div>
+</div>
+</div>
+<!-- Additional Algorithms -->
+<div class="flex space-x-4 mt-4">
+<!-- Snappy -->
+<div class="algorithm-card bg-blue-900 bg-opacity-20 p-3 rounded-lg flex-1">
+<h3 class="text-lg font-semibold text-yellow-400">Snappy</h3>
+<p class="text-xs mt-1">Сжатие: 1.15x | Загрузка: 241.2с | Запросы: 117.1с</p>
+<p class="text-xs mt-2">
+<i class="fas fa-info-circle mr-1"></i>
+<span>Компромиссный вариант без выраженных преимуществ</span>
+</p>
+</div>
+<!-- None -->
+<div class="algorithm-card bg-blue-900 bg-opacity-20 p-3 rounded-lg flex-1">
+<h3 class="text-lg font-semibold text-gray-400">None (без сжатия)</h3>
+<p class="text-xs mt-1">Сжатие: 1.00x | Загрузка: 249.8с | Запросы: 121.7с</p>
+<p class="text-xs mt-2">
+<i class="fas fa-info-circle mr-1"></i>
+<span>Для систем с ограниченными ресурсами CPU</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-balance-scale mr-1"></i> Данные усреднены по трем тестовым прогонам
+            </div>
+<div>7 / 9</div>
+</div>
+</div>
+
+</body></html>

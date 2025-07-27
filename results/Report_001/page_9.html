@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Описание тестовой среды</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 896px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 896px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .spec-card {
+            transition: all 0.3s ease;
+        }
+        .spec-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .architecture-component {
+            transition: all 0.3s ease;
+        }
+        .architecture-component:hover {
+            filter: brightness(1.2);
+        }
+        .connector {
+            stroke: #4CAF50;
+            stroke-width: 2;
+            stroke-dasharray: 5,3;
+            animation: dash 5s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Описание тестовой среды</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-row space-x-8">
+<!-- Left Column: Specifications -->
+<div class="w-1/2">
+<!-- Hardware Specs -->
+<div class="spec-card bg-blue-900 bg-opacity-30 p-5 rounded-lg mb-6">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-laptop text-yellow-300 mr-3"></i>
+                        Аппаратное обеспечение
+                    </h2>
+<ul class="space-y-3 text-lg">
+<li class="flex items-center">
+<i class="fas fa-microchip text-blue-300 mr-3"></i>
+<span><strong>Процессор:</strong> MacBook Pro, 6 ядер</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-memory text-blue-300 mr-3"></i>
+<span><strong>Оперативная память:</strong> 32 ГБ</span>
+</li>
+</ul>
+</div>
+<!-- Virtualization Environment -->
+<div class="spec-card bg-blue-900 bg-opacity-30 p-5 rounded-lg mb-6">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-cube text-green-400 mr-3"></i>
+                        Среда виртуализации
+                    </h2>
+<ul class="space-y-3 text-lg">
+<li class="flex items-center">
+<i class="fas fa-box text-green-300 mr-3"></i>
+<span><strong>Контейнеризация:</strong> Podman</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-memory text-green-300 mr-3"></i>
+<span><strong>Выделенная память:</strong> 24 ГБ</span>
+</li>
+</ul>
+</div>
+<!-- Trino Configuration -->
+<div class="spec-card bg-blue-900 bg-opacity-30 p-5 rounded-lg mb-6">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-database text-purple-400 mr-3"></i>
+                        Конфигурация Trino
+                    </h2>
+<ul class="space-y-3 text-lg">
+<li class="flex items-center">
+<i class="fas fa-server text-purple-300 mr-3"></i>
+<span><strong>Координатор:</strong> 1 узел</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-cogs text-purple-300 mr-3"></i>
+<span><strong>Рабочий узел:</strong> 1 узел</span>
+</li>
+</ul>
+</div>
+<!-- Storage Solution -->
+<div class="spec-card bg-blue-900 bg-opacity-30 p-5 rounded-lg">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-hdd text-orange-400 mr-3"></i>
+                        Хранилище данных
+                    </h2>
+<ul class="space-y-3 text-lg">
+<li class="flex items-center">
+<i class="fas fa-cloud text-orange-300 mr-3"></i>
+<span><strong>Тип хранилища:</strong> Объектное хранилище S3</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-globe text-orange-300 mr-3"></i>
+<span><strong>Провайдер:</strong> storj.io</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Right Column: Architecture Visualization -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-6 flex items-center">
+<i class="fas fa-project-diagram text-blue-300 mr-3"></i>
+                    Архитектура тестовой среды
+                </h2>
+<!-- Architecture Diagram -->
+<div class="h-96 bg-blue-900 bg-opacity-20 rounded-lg p-6 relative" id="architecture-diagram">
+<!-- MacBook Host -->
+<div class="architecture-component absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-700 bg-opacity-80 rounded-lg p-4 w-4/5 text-center border-2 border-gray-500">
+<div class="flex items-center justify-center mb-2">
+<i class="fas fa-laptop text-2xl text-gray-300 mr-2"></i>
+<span class="text-xl font-medium">MacBook Pro (6 ядер, 32 ГБ ОЗУ)</span>
+</div>
+<!-- Podman Container -->
+<div class="architecture-component bg-blue-800 bg-opacity-70 rounded-lg p-3 mx-auto w-5/6 border border-blue-600">
+<div class="flex items-center justify-center mb-2">
+<i class="fas fa-cube text-xl text-blue-300 mr-2"></i>
+<span class="text-lg font-medium">Podman (24 ГБ ОЗУ)</span>
+</div>
+<!-- Trino Components -->
+<div class="flex justify-around mt-4 mb-3">
+<div class="architecture-component bg-purple-900 bg-opacity-80 rounded p-3 w-5/12 border border-purple-600">
+<div class="text-center">
+<i class="fas fa-server text-purple-300 text-xl mb-1"></i>
+<p class="font-medium">Trino Координатор</p>
+<p class="text-sm text-gray-300">1 узел</p>
+</div>
+</div>
+<div class="architecture-component bg-purple-900 bg-opacity-80 rounded p-3 w-5/12 border border-purple-600">
+<div class="text-center">
+<i class="fas fa-cogs text-purple-300 text-xl mb-1"></i>
+<p class="font-medium">Trino Рабочий узел</p>
+<p class="text-sm text-gray-300">1 узел</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- S3 Storage -->
+<div class="architecture-component absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-900 bg-opacity-70 rounded-lg p-4 w-2/3 text-center border border-orange-700">
+<div class="flex items-center justify-center">
+<i class="fas fa-cloud text-2xl text-orange-300 mr-2"></i>
+<span class="text-xl font-medium">S3 Хранилище (storj.io)</span>
+</div>
+<div class="flex justify-around mt-3">
+<div class="flex items-center text-sm">
+<i class="fas fa-file-archive text-yellow-300 mr-1"></i>
+<span>GZIP</span>
+</div>
+<div class="flex items-center text-sm">
+<i class="fas fa-file-archive text-blue-300 mr-1"></i>
+<span>LZ4</span>
+</div>
+<div class="flex items-center text-sm">
+<i class="fas fa-file text-gray-300 mr-1"></i>
+<span>None</span>
+</div>
+<div class="flex items-center text-sm">
+<i class="fas fa-file-archive text-yellow-500 mr-1"></i>
+<span>Snappy</span>
+</div>
+<div class="flex items-center text-sm">
+<i class="fas fa-file-archive text-green-300 mr-1"></i>
+<span>ZSTD</span>
+</div>
+</div>
+</div>
+<!-- Connection Lines (will be drawn with D3.js) -->
+<svg class="absolute top-0 left-0 w-full h-full" id="connections" style="pointer-events: none;"></svg>
+</div>
+<!-- Additional Notes -->
+<div class="mt-6 bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+<h3 class="text-lg font-medium mb-2 flex items-center">
+<i class="fas fa-info-circle text-blue-300 mr-2"></i>
+                        Дополнительная информация
+                    </h3>
+<p>
+                        Все тесты проводились в контролируемой среде с использованием данных TPC-H масштабного фактора 1 (SF1). 
+                        Результаты представляют средние значения по трем последовательным тестовым прогонам.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-calendar-alt mr-1"></i> Дата проведения тестов: Июль 2025
+            </div>
+<div>9 / 9</div>
+</div>
+</div>
+<script>
+        // Draw connection lines using D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#connections");
+            
+            // Connection from Trino to S3
+            svg.append("path")
+                .attr("d", "M320,240 C320,300 320,360 320,410")
+                .attr("class", "connector")
+                .attr("fill", "none");
+                
+            svg.append("path")
+                .attr("d", "M400,240 C400,300 400,360 400,410")
+                .attr("class", "connector")
+                .attr("fill", "none");
+        });
+    </script>
+
+</body></html>

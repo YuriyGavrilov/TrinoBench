@@ -1,0 +1,284 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Сравнение эффективности сжатия</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 880px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 880px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .bar-container:hover .bar-label {
+            font-weight: bold;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 4px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Сравнение эффективности сжатия</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-col h-full">
+<!-- Introduction -->
+<div class="mb-6">
+<p class="text-lg">
+<i class="fas fa-compress-alt text-yellow-300 mr-2"></i>
+<span class="font-medium">Степень сжатия</span> показывает, насколько эффективно алгоритм уменьшает размер данных относительно несжатого формата (None = 1.00x).
+                </p>
+</div>
+<!-- Visualization Container -->
+<div class="flex flex-row space-x-10">
+<!-- Left: Compression Ratio Visualization -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-percentage text-blue-300 mr-3"></i>
+                        Степень сжатия (выше = лучше)
+                    </h2>
+<div class="h-80" id="compressionRatioChart" data-sk-source-container="chart" data-sk-source-id="56HXY0" data-sk-source-type="web_search"></div>
+<div class="mt-4 bg-blue-900 bg-opacity-30 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-lightbulb mr-2"></i> Ключевые наблюдения
+                        </h3>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+<div>
+<span class="text-green-400 font-medium">ZSTD</span> обеспечивает наилучшую степень сжатия (1.52x), позволяя хранить на 52% больше данных в том же объеме.
+                                </div>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+<div>
+<span class="text-red-400 font-medium">GZIP</span> немного уступает ZSTD с показателем 1.49x.
+                                </div>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+<div>
+<span class="text-yellow-400 font-medium">Snappy</span> показывает наименьшую эффективность сжатия (1.15x) среди тестируемых алгоритмов.
+                                </div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Right: Actual Size Visualization -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-database text-blue-300 mr-3"></i>
+                        Фактический размер данных (МБ)
+                    </h2>
+<div class="h-80" id="actualSizeChart" data-sk-source-type="web_search" data-sk-source-container="chart" data-sk-source-id="56HXY0"></div>
+<div class="mt-4 bg-blue-900 bg-opacity-30 p-4 rounded-lg">
+<h3 class="text-xl font-medium mb-2 text-blue-300">
+<i class="fas fa-coins mr-2"></i> Экономия места
+                        </h3>
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div class="flex items-center">
+<div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+<span>ZSTD: экономия <strong>132.4 МБ</strong></span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+<span>GZIP: экономия <strong>127.6 МБ</strong></span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 rounded-full bg-blue-400 mr-2"></div>
+<span>LZ4: экономия <strong>103.0 МБ</strong></span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+<span>Snappy: экономия <strong>49.9 МБ</strong></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-info-circle mr-1"></i> Данные усреднены по трем тестовым прогонам
+            </div>
+<div>6 / 9</div>
+</div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+<script>
+        // Data from the document
+        const compressionData = [
+            { algorithm: "ZSTD", ratio: 1.52, color: "#10B981", size: 255.9 },
+            { algorithm: "GZIP", ratio: 1.49, color: "#EF4444", size: 260.7 },
+            { algorithm: "LZ4", ratio: 1.36, color: "#60A5FA", size: 285.3 },
+            { algorithm: "Snappy", ratio: 1.15, color: "#F59E0B", size: 338.4 },
+            { algorithm: "None", ratio: 1.00, color: "#9CA3AF", size: 388.3 }
+        ];
+        
+        // Sort data by ratio (descending)
+        const sortedByRatio = [...compressionData].sort((a, b) => b.ratio - a.ratio);
+        
+        // Sort data by size (ascending)
+        const sortedBySize = [...compressionData].sort((a, b) => a.size - b.size);
+        
+        // Create compression ratio chart
+        const ratioMargin = { top: 20, right: 30, bottom: 40, left: 90 };
+        const ratioWidth = 500 - ratioMargin.left - ratioMargin.right;
+        const ratioHeight = 300 - ratioMargin.top - ratioMargin.bottom;
+        
+        const ratioSvg = d3.select("#compressionRatioChart")
+            .append("svg")
+            .attr("width", ratioWidth + ratioMargin.left + ratioMargin.right)
+            .attr("height", ratioHeight + ratioMargin.top + ratioMargin.bottom)
+            .append("g")
+            .attr("transform", `translate(${ratioMargin.left},${ratioMargin.top})`);
+            
+        // X axis
+        const ratioX = d3.scaleLinear()
+            .domain([0, 1.6])
+            .range([0, ratioWidth]);
+            
+        ratioSvg.append("g")
+            .attr("transform", `translate(0,${ratioHeight})`)
+            .call(d3.axisBottom(ratioX))
+            .selectAll("text")
+            .style("fill", "#D1D5DB");
+            
+        // Y axis
+        const ratioY = d3.scaleBand()
+            .domain(sortedByRatio.map(d => d.algorithm))
+            .range([0, ratioHeight])
+            .padding(0.2);
+            
+        ratioSvg.append("g")
+            .call(d3.axisLeft(ratioY))
+            .selectAll("text")
+            .style("fill", "#D1D5DB")
+            .style("font-size", "14px");
+            
+        // Bars
+        ratioSvg.selectAll("ratioBar")
+            .data(sortedByRatio)
+            .enter()
+            .append("rect")
+            .attr("y", d => ratioY(d.algorithm))
+            .attr("x", 0)
+            .attr("height", ratioY.bandwidth())
+            .attr("width", d => ratioX(d.ratio))
+            .attr("fill", d => d.color)
+            .attr("rx", 4)
+            .on("mouseover", function(event, d) {
+                const tooltip = d3.select("#tooltip");
+                tooltip.style("opacity", 1);
+                tooltip.html(`${d.algorithm}: ${d.ratio}x сжатие`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select("#tooltip").style("opacity", 0);
+            });
+            
+        // Labels
+        ratioSvg.selectAll(".ratioLabel")
+            .data(sortedByRatio)
+            .enter()
+            .append("text")
+            .attr("class", "ratioLabel")
+            .attr("y", d => ratioY(d.algorithm) + ratioY.bandwidth()/2 + 5)
+            .attr("x", d => ratioX(d.ratio) + 5)
+            .text(d => d.ratio + "x")
+            .style("fill", "#FFFFFF")
+            .style("font-size", "14px");
+            
+        // Create actual size chart
+        const sizeMargin = { top: 20, right: 30, bottom: 40, left: 90 };
+        const sizeWidth = 500 - sizeMargin.left - sizeMargin.right;
+        const sizeHeight = 300 - sizeMargin.top - sizeMargin.bottom;
+        
+        const sizeSvg = d3.select("#actualSizeChart")
+            .append("svg")
+            .attr("width", sizeWidth + sizeMargin.left + sizeMargin.right)
+            .attr("height", sizeHeight + sizeMargin.top + sizeMargin.bottom)
+            .append("g")
+            .attr("transform", `translate(${sizeMargin.left},${sizeMargin.top})`);
+            
+        // X axis
+        const sizeX = d3.scaleLinear()
+            .domain([0, 400])
+            .range([0, sizeWidth]);
+            
+        sizeSvg.append("g")
+            .attr("transform", `translate(0,${sizeHeight})`)
+            .call(d3.axisBottom(sizeX))
+            .selectAll("text")
+            .style("fill", "#D1D5DB");
+            
+        // Y axis
+        const sizeY = d3.scaleBand()
+            .domain(sortedBySize.map(d => d.algorithm))
+            .range([0, sizeHeight])
+            .padding(0.2);
+            
+        sizeSvg.append("g")
+            .call(d3.axisLeft(sizeY))
+            .selectAll("text")
+            .style("fill", "#D1D5DB")
+            .style("font-size", "14px");
+            
+        // Bars
+        sizeSvg.selectAll("sizeBar")
+            .data(sortedBySize)
+            .enter()
+            .append("rect")
+            .attr("y", d => sizeY(d.algorithm))
+            .attr("x", 0)
+            .attr("height", sizeY.bandwidth())
+            .attr("width", d => sizeX(d.size))
+            .attr("fill", d => d.color)
+            .attr("rx", 4)
+            .on("mouseover", function(event, d) {
+                const tooltip = d3.select("#tooltip");
+                tooltip.style("opacity", 1);
+                tooltip.html(`${d.algorithm}: ${d.size} МБ`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select("#tooltip").style("opacity", 0);
+            });
+            
+        // Labels
+        sizeSvg.selectAll(".sizeLabel")
+            .data(sortedBySize)
+            .enter()
+            .append("text")
+            .attr("class", "sizeLabel")
+            .attr("y", d => sizeY(d.algorithm) + sizeY.bandwidth()/2 + 5)
+            .attr("x", d => sizeX(d.size) + 5)
+            .text(d => d.size + " МБ")
+            .style("fill", "#FFFFFF")
+            .style("font-size", "14px");
+    </script>
+
+</body></html>

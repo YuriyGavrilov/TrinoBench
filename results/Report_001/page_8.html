@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ключевые выводы и рекомендации</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body, html {width: 1280px; min-height: 904px; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 904px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #002855 0%, #004080 100%);
+        }
+        .algorithm-card {
+            transition: all 0.3s ease;
+        }
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .performance-bar {
+            height: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide gradient-bg flex flex-col text-white p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="text-4xl font-bold mb-2">Ключевые выводы и рекомендации</h1>
+<div class="w-24 h-1 bg-green-400 rounded"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-col space-y-6">
+<!-- Summary Visual -->
+<div class="bg-white bg-opacity-10 p-5 rounded-lg">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-chart-line text-yellow-300 mr-3"></i>
+                    Сравнительный анализ алгоритмов
+                </h2>
+<div class="flex justify-between items-center space-x-4">
+<div class="w-1/5 text-center">
+<div class="text-lg font-medium">ZSTD</div>
+<div class="text-3xl text-green-400 font-bold mb-1">
+<i class="fas fa-trophy"></i>
+</div>
+<div class="text-sm text-gray-300">Лучший универсальный выбор</div>
+</div>
+<div class="w-1/5 text-center">
+<div class="text-lg font-medium">LZ4</div>
+<div class="text-3xl text-blue-300 font-bold mb-1">
+<i class="fas fa-bolt"></i>
+</div>
+<div class="text-sm text-gray-300">Лидер по скорости чтения</div>
+</div>
+<div class="w-1/5 text-center">
+<div class="text-lg font-medium">GZIP</div>
+<div class="text-3xl text-red-400 font-bold mb-1">
+<i class="fas fa-archive"></i>
+</div>
+<div class="text-sm text-gray-300">Для архивации данных</div>
+</div>
+<div class="w-1/5 text-center">
+<div class="text-lg font-medium">Snappy</div>
+<div class="text-3xl text-yellow-400 font-bold mb-1">
+<i class="fas fa-balance-scale"></i>
+</div>
+<div class="text-sm text-gray-300">Компромиссный вариант</div>
+</div>
+<div class="w-1/5 text-center">
+<div class="text-lg font-medium">None</div>
+<div class="text-3xl text-gray-400 font-bold mb-1">
+<i class="fas fa-ban"></i>
+</div>
+<div class="text-sm text-gray-300">Без сжатия</div>
+</div>
+</div>
+</div>
+<!-- Detailed Recommendations -->
+<div class="grid grid-cols-3 gap-4">
+<!-- ZSTD Card -->
+<div class="algorithm-card bg-white bg-opacity-10 p-4 rounded-lg border-l-4 border-green-400">
+<h3 class="text-xl font-semibold mb-3 flex items-center">
+<i class="fas fa-star text-green-400 mr-2"></i>
+                        ZSTD — Лучший выбор
+                    </h3>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<i class="fas fa-compress-alt text-green-400 mt-1 mr-2"></i>
+<span>Наилучшая степень сжатия: <strong>1.52x</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-file-upload text-green-400 mt-1 mr-2"></i>
+<span>Самая высокая скорость загрузки: <strong>231.5 с</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-search text-green-400 mt-1 mr-2"></i>
+<span>Высокая скорость запросов: <strong>116.4 с</strong></span>
+</li>
+</ul>
+<div class="mt-3 text-sm text-gray-300">
+<i class="fas fa-check-circle mr-1"></i>
+                        Рекомендуется для смешанных нагрузок (запись и чтение)
+                    </div>
+</div>
+<!-- LZ4 Card -->
+<div class="algorithm-card bg-white bg-opacity-10 p-4 rounded-lg border-l-4 border-blue-400">
+<h3 class="text-xl font-semibold mb-3 flex items-center">
+<i class="fas fa-bolt text-blue-400 mr-2"></i>
+                        LZ4 — Для быстрого чтения
+                    </h3>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<i class="fas fa-search text-blue-400 mt-1 mr-2"></i>
+<span>Самая высокая скорость запросов: <strong>115.5 с</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-file-upload text-blue-400 mt-1 mr-2"></i>
+<span>Хорошая скорость загрузки: <strong>234.3 с</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-compress-alt text-blue-400 mt-1 mr-2"></i>
+<span>Достаточная степень сжатия: <strong>1.36x</strong></span>
+</li>
+</ul>
+<div class="mt-3 text-sm text-gray-300">
+<i class="fas fa-check-circle mr-1"></i>
+                        Идеально для аналитических систем с приоритетом скорости запросов
+                    </div>
+</div>
+<!-- GZIP Card -->
+<div class="algorithm-card bg-white bg-opacity-10 p-4 rounded-lg border-l-4 border-red-400">
+<h3 class="text-xl font-semibold mb-3 flex items-center">
+<i class="fas fa-archive text-red-400 mr-2"></i>
+                        GZIP — Для архивации
+                    </h3>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<i class="fas fa-compress-alt text-red-400 mt-1 mr-2"></i>
+<span>Хорошая степень сжатия: <strong>1.49x</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-file-upload text-red-400 mt-1 mr-2"></i>
+<span>Средняя скорость загрузки: <strong>239.9 с</strong></span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-search text-red-400 mt-1 mr-2"></i>
+<span>Низкая скорость запросов: <strong>128.0 с</strong></span>
+</li>
+</ul>
+<div class="mt-3 text-sm text-gray-300">
+<i class="fas fa-check-circle mr-1"></i>
+                        Подходит для редко используемых данных и холодного хранения
+                    </div>
+</div>
+</div>
+<!-- Additional Options -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Snappy Card -->
+<div class="algorithm-card bg-white bg-opacity-10 p-4 rounded-lg border-l-4 border-yellow-400">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-balance-scale text-yellow-400 mr-2"></i>
+                        Snappy — Компромиссный вариант
+                    </h3>
+<p class="text-sm">Не показал выдающихся результатов ни в одной из метрик. Степень сжатия <strong>1.15x</strong>, время запросов <strong>117.1 с</strong>, время загрузки <strong>241.2 с</strong>.</p>
+</div>
+<!-- None Card -->
+<div class="algorithm-card bg-white bg-opacity-10 p-4 rounded-lg border-l-4 border-gray-400">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-ban text-gray-400 mr-2"></i>
+                        None — Без сжатия
+                    </h3>
+<p class="text-sm">Оправдан только в системах с крайне ограниченным CPU. Время запросов <strong>121.7 с</strong>, время загрузки <strong>249.8 с</strong>, объем данных <strong>388.3 МБ</strong>.</p>
+</div>
+</div>
+<!-- Final Recommendation -->
+<div class="bg-green-800 bg-opacity-30 p-4 rounded-lg border-l-4 border-green-500 mt-2">
+<h3 class="text-xl font-semibold flex items-center">
+<i class="fas fa-lightbulb text-yellow-300 mr-2"></i>
+                    Итоговая рекомендация
+                </h3>
+<p class="mt-1">Для большинства сценариев использования Trino <strong>рекомендуется ZSTD</strong> как алгоритм, предлагающий наилучший баланс между степенью сжатия, скоростью записи и скоростью чтения.</p>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 text-gray-300 text-sm flex justify-between">
+<div>
+<i class="fas fa-info-circle mr-1"></i> Рекомендации основаны на усредненных результатах трех тестов
+            </div>
+<div>8 / 9</div>
+</div>
+</div>
+
+</body></html>
