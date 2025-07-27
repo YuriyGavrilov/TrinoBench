@@ -8,6 +8,8 @@ TrinoBench is a robust and flexible Bash script designed to automate performance
 
 This script, `trincheck_v15.10.sh`, is **Release Candidate 1**. It incorporates significant enhancements over previous iterations, including improved Trino CLI handling, robust error management, and precise metadata extraction for Iceberg tables.
 
+[![Watch the video](https://github.com/YuriyGavrilov/TrinoBench/blob/main/docs/TrinoBench.mp4)
+
 ## Features
 
 - **Automated Data Copying:** Seamlessly copy TPC-DS datasets from a source catalog (e.g., `tpcds`) to various target Iceberg catalogs with different compression codecs and file formats.
