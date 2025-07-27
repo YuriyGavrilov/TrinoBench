@@ -62,3 +62,6 @@ Before running the script, ensure you have:
 
 ```bash
 ./trincheck_v15.10.sh [options]
+
+```bash
+./trincheck_v15.10.sh -s sf1 -q 1-99 -c i_bench_gzip,i_bench_lz4,i_bench_none,i_bench_snappy,i_bench_zstd -p i_bench_ -x
