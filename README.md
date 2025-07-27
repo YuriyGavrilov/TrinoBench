@@ -63,8 +63,13 @@ Before running the script, ensure you have:
 ```bash
 ./trincheck_v15.10.sh [options]
     ```
-
 ## My example
 ```bash
 ./trincheck_v15.10.sh -s sf1 -q 1-99 -c i_bench_gzip,i_bench_lz4,i_bench_none,i_bench_snappy,i_bench_zstd -p i_bench_ -x
 ```
+
+## My resaults
+
+<img width="414" height="402" alt="Table" src="https://github.com/user-attachments/assets/6c7697e4-d14f-408b-ab1b-3818fe1bf301" />
+
+
