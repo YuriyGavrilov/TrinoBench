@@ -62,6 +62,26 @@ Before running the script, ensure you have:
 
 ```bash
 ./trincheck_v15.10.sh [options (e.g. --help)]
+
+TrinoBench v15.10 - Enhanced Trino Performance Testing Tool
+
+Usage: ./trincheck_v15.10.sh [options]
+
+Options:
+  -s, --scale       Scale factors (comma separated, e.g., sf1,sf10)
+  -q, --queries     Query range (e.g., 1-5,10,15-20), or 'all' for all queries
+  -c, --catalogs    Catalog names (comma separated, e.g., i_bench_gzip,i_bench_zstd)
+  -p, --pattern     Catalog pattern (regex) to filter available catalogs (default: 'i_bench_')
+  -x, --cross       Enable cross-catalog data copying and associated queries
+  -P, --password    Trino password (if required)
+  -d, --debug       Enable debug logging (very verbose)
+  -h, --help        Show this help message and exit
+
+Examples:
+  ./trincheck_v15.10.sh -s sf1,sf10 -q 1-5,10
+  ./trincheck_v15.10.sh -c i_bench_gzip,i_bench_zstd -x
+  ./trincheck_v15.10.sh --scale sf100 --queries all --cross
+  ./trincheck_v15.10.sh --debug # Test Trino connection and exit
 ```
 ## My example
 
