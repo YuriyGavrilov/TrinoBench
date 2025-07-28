@@ -61,7 +61,7 @@ Before running the script, ensure you have:
 ## Usage
 
 ```bash
-./trincheck_v15.10.sh [options]
+./trincheck_v15.10.sh [options (e.g. --help)]
 ```
 ## My example
 
