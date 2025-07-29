@@ -1,6 +1,6 @@
 # TrinoBench v15.10 - Advanced Trino Performance Benchmarking Tool
 
-https://gavrilov.info/pictures/IMG_8091.jpeg<img width="1024" height="576" alt="image" src="https://github.com/user-attachments/assets/c91d0c3d-2ceb-4a06-be56-5169be8473f9" />
+<img width="1024" height="576" alt="image" src="https://github.com/user-attachments/assets/c91d0c3d-2ceb-4a06-be56-5169be8473f9" />
 
 GitHub release https://github.com/YuriyGavrilov/TrinoBench/releases/tag/RC1
 
