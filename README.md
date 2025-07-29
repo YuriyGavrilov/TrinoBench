@@ -61,11 +61,10 @@ Before running the script, ensure you have:
 ## Usage
 
 ```bash
-./trincheck_v15.10.sh [options (e.g. --help)]
+./trincheck_v15.10.sh --help
 ```
 
 ```bash
-./trincheck_v15.10.sh --help
 TrinoBench v15.10 - Enhanced Trino Performance Testing Tool
 
 Usage: ./trincheck_v15.10.sh [options]
