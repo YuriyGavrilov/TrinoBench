@@ -1,6 +1,6 @@
 # TrinoBench v15.10 - Advanced Trino Performance Benchmarking Tool
 
-GitHub release (https://github.com/YuriyGavrilov/TrinoBench/releases/tag/RC1)
+GitHub release https://github.com/YuriyGavrilov/TrinoBench/releases/tag/RC1
 
 ## Overview
 
